@@ -1,6 +1,7 @@
 import leftCircle from "@/assets/left-circle.svg";
 import rightCircle from "@/assets/right-circle.svg";
 import Earth from "@/assets/earth.png";
+import EarthFields from "@/assets/earth-with-magnetic-fields.png";
 import Aviation from "@/assets/aviation.png";
 import Satellite from "@/assets/satellite.png";
 import GPS from "@/assets/gps.png";
@@ -94,7 +95,11 @@ function App(): React.ReactElement {
   const [solarFlareIntensity, setSolarFlareIntensity] = useState<number>(0);
   const [cmeIntensity, setCmeIntensity] = useState<number>(0);
   const [solarWindIntensity, setSolarWindIntensity] = useState<number>(0);
-
+  const fieldStrength = Math.max(
+    solarFlareIntensity,
+    cmeIntensity,
+    solarWindIntensity
+  );
   let aviationAffected: boolean = false;
   let satelliteAffected: boolean = false;
   let gpsAffected: boolean = false;
@@ -165,12 +170,21 @@ function App(): React.ReactElement {
           setCmeIntensity={setCmeIntensity}
           solarWindIntensity={solarWindIntensity}
           setSolarWindIntensity={setSolarWindIntensity}
-          className="absolute top-1/20 -left-2/5 max-sm:fixed max-sm:-top-60 max-sm:-left-20 max-sm:max-w-[150px]"
+          className="absolute top-1/20 -left-60 max-sm:fixed max-sm:-top-60 max-sm:-left-20 max-sm:max-w-[150px]"
         />
 
         {/* Earth */}
         <img src={Earth} alt="" className="h-full w-full rounded-full" />
-
+        {/* Magnetic Fields */}
+        <img
+          src={EarthFields}
+          alt="Magnetic Fields"
+          className="absolute inset-0 h-full w-full rounded-full transition-all duration-200"
+          style={{
+            opacity: fieldStrength / 100, // slider controls opacity
+            // transform: `scale(${1 + fieldStrength / 200})`, // expand slightly with strength
+          }}
+        />
         {/* Fields on right arc */}
         <div className="absolute top-1/2 left-1/2 h-full w-full -translate-x-1/4 -translate-y-1/2">
           {affectedFields.map((field, idx) => (
@@ -201,7 +215,7 @@ function SliderCard({
     // console.log(value[0]);
   }
   return (
-    <div className="flex max-w-[250px] flex-col gap-2 rounded-xl border border-white bg-gradient-to-b from-[#F3F3F3]/12 to-[#8D8D8D]/0 p-2">
+    <div className="flex max-w-[225px] flex-col gap-2 rounded-xl border border-white bg-gradient-to-b from-[#F3F3F3]/12 to-[#8D8D8D]/0 p-2">
       <h1 className="font-bold text-white">{heading}</h1>
       <p className="text-[10px] text-white">{description}</p>
       <p className="text-[10px] text-red-500">{sliderValue}</p>
