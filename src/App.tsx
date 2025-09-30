@@ -9,6 +9,7 @@ import PowerGrid from "@/assets/powergrid.png";
 import Radio from "@/assets/radio.png";
 import { Slider } from "@/components/ui/slider";
 import React, { useState } from "react";
+import ParticlesComponent from "@/particles";
 
 // Type definitions
 interface SliderGroupProps {
@@ -156,6 +157,7 @@ function App(): React.ReactElement {
   ];
   return (
     <main className="bg-page-bg relative min-h-screen w-full overflow-hidden max-sm:overflow-scroll">
+      <ParticlesComponent />
       {/* Left circle */}
       <img src={leftCircle} alt="" className="absolute -top-50 -left-20" />
 
@@ -174,7 +176,12 @@ function App(): React.ReactElement {
         />
 
         {/* Earth */}
-        <img src={Earth} alt="" className="h-full w-full rounded-full" />
+        <img
+          src={Earth}
+          alt=""
+          className="animate-spin-slow h-full w-full rounded-full"
+        />
+        {/* <SpinningEarth /> */}
         {/* Magnetic Fields */}
         <img
           src={EarthFields}
