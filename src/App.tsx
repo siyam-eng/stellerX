@@ -7,7 +7,40 @@ import GPS from "@/assets/gps.png";
 import PowerGrid from "@/assets/powergrid.png";
 import Radio from "@/assets/radio.png";
 import { Slider } from "@/components/ui/slider";
-import { useState } from "react";
+import React, { useState } from "react";
+
+// Type definitions
+interface SliderGroupProps {
+  solarFlareIntensity: number;
+  setSolarFlareIntensity: (value: number) => void;
+  cmeIntensity: number;
+  setCmeIntensity: (value: number) => void;
+  solarWindIntensity: number;
+  setSolarWindIntensity: (value: number) => void;
+  className?: string;
+}
+
+interface SliderCardProps {
+  heading: string;
+  description: string;
+  sliderValue: number;
+  setSliderValue: (value: number) => void;
+}
+
+interface AffectedFieldProps {
+  imgPath: string;
+  caption: string;
+  affected: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+interface AffectedFieldData {
+  imgPath: string;
+  caption: string;
+  affected: boolean;
+  angle: number;
+}
 
 const SLIDERDATA = {
   solarFlare: {
@@ -28,16 +61,45 @@ const SLIDERDATA = {
   },
 };
 
-function App() {
-  const [solarFlareIntensity, setSolarFlareIntensity] = useState(0);
-  const [cmeIntensity, setCmeIntensity] = useState(0);
-  const [solarWindIntensity, setSolarWindIntensity] = useState(0);
+function SliderGroup(props: SliderGroupProps): React.ReactElement {
+  return (
+    <div className={`ml-4 flex flex-col gap-3 ${props.className}`}>
+      <SliderCard
+        key={SLIDERDATA.solarFlare.heading}
+        heading={SLIDERDATA.solarFlare.heading}
+        description={SLIDERDATA.solarFlare.description}
+        sliderValue={props.solarFlareIntensity}
+        setSliderValue={props.setSolarFlareIntensity}
+      />
 
-  let aviationAffected = false;
-  let satelliteAffected = false;
-  let gpsAffected = false;
-  let powerGridAffected = false;
-  let radioAffected = false;
+      <SliderCard
+        key={SLIDERDATA.cme.heading}
+        heading={SLIDERDATA.cme.heading}
+        description={SLIDERDATA.cme.description}
+        sliderValue={props.cmeIntensity}
+        setSliderValue={props.setCmeIntensity}
+      />
+      <SliderCard
+        key={SLIDERDATA.solarWind.heading}
+        heading={SLIDERDATA.solarWind.heading}
+        description={SLIDERDATA.solarWind.description}
+        sliderValue={props.solarWindIntensity}
+        setSliderValue={props.setSolarWindIntensity}
+      />
+    </div>
+  );
+}
+
+function App(): React.ReactElement {
+  const [solarFlareIntensity, setSolarFlareIntensity] = useState<number>(0);
+  const [cmeIntensity, setCmeIntensity] = useState<number>(0);
+  const [solarWindIntensity, setSolarWindIntensity] = useState<number>(0);
+
+  let aviationAffected: boolean = false;
+  let satelliteAffected: boolean = false;
+  let gpsAffected: boolean = false;
+  let powerGridAffected: boolean = false;
+  let radioAffected: boolean = false;
 
   if (solarFlareIntensity > 40) {
     radioAffected = true;
@@ -55,89 +117,94 @@ function App() {
   if (cmeIntensity > 80) {
     powerGridAffected = true;
   }
+  const affectedFields: AffectedFieldData[] = [
+    {
+      imgPath: Aviation,
+      caption: "Aviation",
+      affected: aviationAffected,
+      angle: -90,
+    },
+    {
+      imgPath: Satellite,
+      caption: "Satellite",
+      affected: satelliteAffected,
+      angle: -45,
+    },
+    {
+      imgPath: GPS,
+      caption: "GPS Tracker",
+      affected: gpsAffected,
+      angle: 0,
+    },
+    {
+      imgPath: PowerGrid,
+      caption: "Power Grid",
+      affected: powerGridAffected,
+      angle: 45,
+    },
+    {
+      imgPath: Radio,
+      caption: "Radio Communications",
+      affected: radioAffected,
+      angle: 90,
+    },
+  ];
   return (
-    <main className="bg-page-bg relative min-h-screen w-full overflow-hidden">
+    <main className="bg-page-bg relative min-h-screen w-full overflow-hidden max-sm:overflow-scroll">
       {/* Left circle */}
       <img src={leftCircle} alt="" className="absolute -top-50 -left-20" />
 
       {/* Right circle */}
       <img src={rightCircle} alt="" className="absolute -top-60 -right-30" />
 
-      {/* earth */}
-      <img
-        src={Earth}
-        alt=""
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform"
-      />
+      <div className="absolute top-1/2 left-1/2 max-w-md -translate-x-1/2 -translate-y-1/2">
+        <SliderGroup
+          solarFlareIntensity={solarFlareIntensity}
+          setSolarFlareIntensity={setSolarFlareIntensity}
+          cmeIntensity={cmeIntensity}
+          setCmeIntensity={setCmeIntensity}
+          solarWindIntensity={solarWindIntensity}
+          setSolarWindIntensity={setSolarWindIntensity}
+          className="absolute top-1/20 -left-2/5 max-sm:fixed max-sm:-top-60 max-sm:-left-20 max-sm:max-w-[150px]"
+        />
 
-      <div className="flex justify-between">
-        <div className="ml-4 flex flex-col gap-3">
-          <SliderCard
-            key={SLIDERDATA.solarFlare.heading}
-            heading={SLIDERDATA.solarFlare.heading}
-            description={SLIDERDATA.solarFlare.description}
-            sliderValue={solarFlareIntensity}
-            setSliderValue={setSolarFlareIntensity}
-          />
+        {/* Earth */}
+        <img src={Earth} alt="" className="h-full w-full rounded-full" />
 
-          <SliderCard
-            key={SLIDERDATA.cme.heading}
-            heading={SLIDERDATA.cme.heading}
-            description={SLIDERDATA.cme.description}
-            sliderValue={cmeIntensity}
-            setSliderValue={setCmeIntensity}
-          />
-          <SliderCard
-            key={SLIDERDATA.solarWind.heading}
-            heading={SLIDERDATA.solarWind.heading}
-            description={SLIDERDATA.solarWind.description}
-            sliderValue={solarWindIntensity}
-            setSliderValue={setSolarWindIntensity}
-          />
-        </div>
-
-        <div className="mt-5 mr-5 grid grid-cols-2 gap-3">
-          <AffectedField
-            imgPath={Aviation}
-            caption={"Aviation"}
-            affected={aviationAffected}
-          />
-          <AffectedField
-            imgPath={Satellite}
-            caption={"Satellite"}
-            affected={satelliteAffected}
-          />
-          <AffectedField
-            imgPath={GPS}
-            caption={"GPS Tracker"}
-            affected={gpsAffected}
-          />
-          <AffectedField
-            imgPath={PowerGrid}
-            caption={"Power Grid"}
-            affected={powerGridAffected}
-          />
-          <AffectedField
-            imgPath={Radio}
-            caption={"Radio Communications"}
-            affected={radioAffected}
-          />
+        {/* Fields on right arc */}
+        <div className="absolute top-1/2 left-1/2 h-full w-full -translate-x-1/4 -translate-y-1/2">
+          {affectedFields.map((field, idx) => (
+            <AffectedField
+              key={idx}
+              imgPath={field.imgPath}
+              caption={field.caption}
+              affected={field.affected}
+              style={{
+                transform: `rotate(${field.angle}deg) translate(220px) rotate(${-field.angle}deg)`,
+              }}
+            />
+          ))}
         </div>
       </div>
     </main>
   );
 }
 
-function SliderCard({ heading, description, sliderValue, setSliderValue }) {
-  function onSliderValueChange(value) {
+function SliderCard({
+  heading,
+  description,
+  sliderValue,
+  setSliderValue,
+}: SliderCardProps): React.ReactElement {
+  function onSliderValueChange(value: number[]): void {
     setSliderValue(value[0]);
     // console.log(value[0]);
   }
   return (
-    <div className="flex max-w-[300px] flex-col gap-2 rounded-xl border border-white bg-gradient-to-b from-[#F3F3F3]/12 to-[#8D8D8D]/0 p-2">
-      <h1 className="text-xl font-black text-white">{heading}</h1>
-      <p className="text-xs text-white">{description}</p>
-      <p className="text-red-500">{sliderValue}</p>
+    <div className="flex max-w-[250px] flex-col gap-2 rounded-xl border border-white bg-gradient-to-b from-[#F3F3F3]/12 to-[#8D8D8D]/0 p-2">
+      <h1 className="font-bold text-white">{heading}</h1>
+      <p className="text-[10px] text-white">{description}</p>
+      <p className="text-[10px] text-red-500">{sliderValue}</p>
       <Slider
         defaultValue={[0]}
         value={[sliderValue]}
@@ -150,22 +217,31 @@ function SliderCard({ heading, description, sliderValue, setSliderValue }) {
   );
 }
 
-function AffectedField({ imgPath, caption, affected }) {
-  // const [affected, toggleAffected] = useState(false);
-  const affectedStyle = affected ? "color-red-500/10" : "";
+function AffectedField({
+  imgPath,
+  caption,
+  affected,
+  className = "",
+  style,
+}: AffectedFieldProps): React.ReactElement {
   return (
-    <figure className={"relative z-10 w-20 rounded-full" + affectedStyle}>
-      <div className="relative flex justify-center">
-        <img
-          src={imgPath}
-          alt=""
-          className={`rounded-full border-2 ${affected ? "border-red-500" : ""}`}
-        />
+    <figure
+      className={`absolute top-1/2 left-1/2 z-10 grid -translate-x-[50%] -translate-y-[40%] place-items-center ${className}`}
+      style={style}
+    >
+      <div
+        className={`relative flex max-w-15 justify-center rounded-full border-2 ${affected ? "border-red-500" : ""}`}
+      >
+        <img src={imgPath} alt="" className={`w-full`} />
         <div
-          className={`absolute inset-0 z-20 rounded-full ${affected ? "bg-red-500/30" : ""} `}
+          className={`absolute inset-0 z-20 rounded-full ${
+            affected ? "animate-blink bg-red-500/30" : ""
+          }`}
         ></div>
       </div>
-      <figcaption className="text-center text-white">{caption}</figcaption>
+      <figcaption className="text-center text-xs text-white">
+        {caption}
+      </figcaption>
     </figure>
   );
 }
